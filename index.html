@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Safety Zone - Ứng dụng quản lý thời gian sử dụng thiết bị</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Safety Zone giúp phụ huynh quản lý thời gian sử dụng thiết bị của con, đặt giới hạn và theo dõi hoạt động một cách an toàn." />
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #0f172a;
+      --card: #020617;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: #1f2937;
+      --accent: #22c55e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .shell {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 32px 16px 48px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.25);
+    }
+    h1 {
+      font-size: clamp(26px, 3vw + 16px, 36px);
+      margin-bottom: 12px;
+    }
+    .subtitle {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 650px;
+      margin: 0 auto;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr);
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .card {
+      background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.25), transparent 55%), #020617;
+      border-radius: 20px;
+      padding: 20px 20px 18px;
+      border: 1px solid rgba(30, 64, 175, 0.4);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.85);
+    }
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    ul {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      font-size: 14px;
+    }
+    li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      color: var(--muted);
+    }
+    li strong {
+      color: var(--text);
+      display: block;
+      font-weight: 600;
+    }
+    .bullet {
+      margin-top: 5px;
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--primary);
+      flex-shrink: 0;
+    }
+    .pill {
+      display: inline-flex;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .panel {
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 16px;
+      padding: 16px 16px 14px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      margin-top: 12px;
+    }
+    .panel h3 {
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+    .meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 32px;
+      border-top: 1px solid rgba(30, 64, 175, 0.6);
+      padding-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+    }
+    .meta a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    .meta a:hover {
+      text-decoration: underline;
+    }
+    .tag-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(37, 99, 235, 0.4);
+      color: var(--muted);
+    }
+    .contact-list {
+      font-size: 14px;
+      color: var(--muted);
+      display: grid;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    @media (max-width: 768px) {
+      .shell { padding-top: 24px; }
+      .grid { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="badge">
+        <span class="badge-dot"></span>
+        <span>Ứng dụng kiểm soát sử dụng thiết bị cho gia đình</span>
+      </div>
+      <h1>Safety Zone</h1>
+      <p class="subtitle">
+        Safety Zone hỗ trợ phụ huynh quản lý thời gian sử dụng iPhone/iPad của con,
+        đặt giới hạn theo ứng dụng hoặc khung giờ, và theo dõi hoạt động sử dụng thiết bị
+        một cách an toàn, tôn trọng quyền riêng tư.
+      </p>
+    </header>
+
+    <section class="grid">
+      <section class="card">
+        <p class="section-title">Tổng quan sản phẩm</p>
+        <h2>Safety Zone hoạt động như thế nào?</h2>
+        <ul>
+          <li>
+            <span class="bullet"></span>
+            <span>
+              <strong>Giới hạn thời gian sử dụng</strong>
+              Phụ huynh có thể đặt giới hạn thời gian sử dụng theo ứng dụng hoặc theo nhóm ứng dụng,
+              giúp con tập trung vào việc học và sinh hoạt cân bằng hơn.
+            </span>
+          </li>
+          <li>
+            <span class="bullet"></span>
+            <span>
+              <strong>Lịch chặn theo khung giờ</strong>
+              Hỗ trợ thiết lập khoảng thời gian “Không làm phiền”, ví dụ giờ học, giờ ngủ,
+              để hạn chế tối đa việc sử dụng thiết bị ngoài ý muốn.
+            </span>
+          </li>
+          <li>
+            <span class="bullet"></span>
+            <span>
+              <strong>Theo dõi mức độ sử dụng</strong>
+              Cung cấp thống kê cơ bản về thời lượng sử dụng thiết bị và ứng dụng,
+              giúp phụ huynh và con cùng thảo luận, xây dựng thói quen lành mạnh.
+            </span>
+          </li>
+          <li>
+            <span class="bullet"></span>
+            <span>
+              <strong>Tôn trọng quyền riêng tư</strong>
+              Safety Zone chỉ sử dụng các API chính thức của Apple (Family Controls, DeviceActivity) để
+              áp dụng giới hạn và lấy thống kê tổng quan, không đọc nội dung tin nhắn, hình ảnh
+              hay nội dung cá nhân của người dùng.
+            </span>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <p class="section-title">Thông tin cho Apple Review</p>
+
+        <div class="panel">
+          <span class="pill">Family Controls &amp; DeviceActivity</span>
+          <h3>Lý do sử dụng Family Controls</h3>
+          <p style="font-size: 14px; color: var(--muted);">
+            Safety Zone sử dụng Family Controls để thiết lập giới hạn thời gian và
+            chặn ứng dụng theo khung giờ cho các thiết bị con trong nhóm gia đình.
+            Tính năng này được dùng đúng theo mục đích kiểm soát của phụ huynh,
+            không bán hoặc chia sẻ dữ liệu cho bên thứ ba.
+          </p>
+        </div>
+
+        <div class="panel">
+          <h3>Quyền riêng tư &amp; dữ liệu</h3>
+          <ul>
+            <li>
+              <span class="bullet"></span>
+              <span>
+                Không thu thập nội dung cá nhân (tin nhắn, ảnh, nội dung trong ứng dụng).
+              </span>
+            </li>
+            <li>
+              <span class="bullet"></span>
+              <span>
+                Dữ liệu sử dụng (thời lượng, tên ứng dụng) chỉ dùng để hiển thị cho
+                phụ huynh trong ứng dụng và không được chia sẻ cho bên thứ ba.
+              </span>
+            </li>
+            <li>
+              <span class="bullet"></span>
+              <span>
+                Người dùng có thể ngừng sử dụng và gỡ quyền bất kỳ lúc nào
+                thông qua phần Cài đặt hệ thống của iOS.
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <h3>Liên hệ &amp; hỗ trợ</h3>
+          <div class="contact-list">
+            <span>Email: <a href="mailto:you@example.com">you@example.com</a></span>
+            <span>Hỗ trợ kỹ thuật: vui lòng liên hệ qua email để được phản hồi trong vòng 2–3 ngày làm việc.</span>
+          </div>
+          <div class="tag-row">
+            <span class="tag">iOS App</span>
+            <span class="tag">Parental Control</span>
+            <span class="tag">Family Safety</span>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <footer class="meta">
+      <span>© 2026 Safety Zone. All rights reserved.</span>
+      <span>Trang này được tạo phục vụ việc review ứng dụng trên App Store.</span>
+    </footer>
+  </main>
+</body>
+</html>
